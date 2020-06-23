@@ -23,26 +23,27 @@ import io.supercharge.shimmerlayout.ShimmerLayout;
 
 public class GalleryAdapter extends ListAdapter<PhotoItem, MyViewHolder>{
 
-    static DiffUtil.ItemCallback DiffCallback = new DiffUtil.ItemCallback<PhotoItem>() {
-        @Override
-        public boolean areItemsTheSame(@NonNull PhotoItem oldItem, @NonNull PhotoItem newItem) {
-            return oldItem == newItem;
-        }
-
-        @Override
-        public boolean areContentsTheSame(@NonNull PhotoItem oldItem, @NonNull PhotoItem newItem) {
-            return oldItem.id == newItem.id;
-        }
-    };
-
     protected GalleryAdapter() {
-        super(DiffCallback);
+        super(new DiffUtil.ItemCallback<PhotoItem>() {
+            @Override
+            public boolean areItemsTheSame(@NonNull PhotoItem oldItem, @NonNull PhotoItem newItem) {
+                return oldItem.id == newItem.id;
+            }
+
+            @Override
+            public boolean areContentsTheSame(@NonNull PhotoItem oldItem, @NonNull PhotoItem newItem) {
+                return oldItem.id == newItem.id &&
+                        oldItem.webformatURL.equals(newItem.webformatURL) &&
+                        oldItem.largeImageURL.equals(newItem.largeImageURL);
+            }
+        });
     }
 
     @NonNull
     @Override
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        MyViewHolder holder = new MyViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.gallery_cell, parent, false));
+        MyViewHolder holder = new MyViewHolder(
+                LayoutInflater.from(parent.getContext()).inflate(R.layout.gallery_cell, parent, false));
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

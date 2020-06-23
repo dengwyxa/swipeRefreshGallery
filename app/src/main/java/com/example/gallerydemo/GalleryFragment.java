@@ -2,8 +2,8 @@ package com.example.gallerydemo;
 
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.lifecycle.ViewModelProviders;
 
+import android.app.Activity;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -20,8 +20,8 @@ import android.view.ViewGroup;
 import java.util.List;
 
 public class GalleryFragment extends Fragment {
-    SwipeRefreshLayout swipeRefreshLayout;
-    private GalleryViewModel mViewModel;
+    SwipeRefreshLayout swipeLayout;
+    private GalleryViewModel galleryViewModel;
 
     public static GalleryFragment newInstance() {
         return new GalleryFragment();
@@ -37,29 +37,30 @@ public class GalleryFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        RecyclerView recyclerView = getActivity().findViewById(R.id.recyclerView);
-        swipeRefreshLayout = getActivity().findViewById(R.id.swipeRefreshLayout);
+        Activity activity = requireActivity();
+        RecyclerView recyclerView = activity.findViewById(R.id.recyclerView);
+        swipeLayout = activity.findViewById(R.id.swiperLayout);
         final GalleryAdapter galleryAdapter = new GalleryAdapter();
         recyclerView.setAdapter(galleryAdapter);
         recyclerView.setLayoutManager(new GridLayoutManager(requireContext(), 2));
-        mViewModel = ViewModelProviders.of(this, new ViewModelProvider.AndroidViewModelFactory(requireActivity().getApplication())).get(GalleryViewModel.class);
-        mViewModel.getPhotoListLive().observe(requireActivity() , new Observer<List<PhotoItem>>() {
+        galleryViewModel = new ViewModelProvider(this, new ViewModelProvider.AndroidViewModelFactory(activity.getApplication())).get(GalleryViewModel.class);
+        galleryViewModel.getPhotoListLive().observe(getViewLifecycleOwner() , new Observer<List<PhotoItem>>() {
             @Override
             public void onChanged(List<PhotoItem> photoItems) {
                 galleryAdapter.submitList(photoItems);
-                if (swipeRefreshLayout.isRefreshing()) {
-                    swipeRefreshLayout.setRefreshing(false);
+                if (swipeLayout.isRefreshing()) {
+                    swipeLayout.setRefreshing(false);
                 }
             }
         });
-        if (mViewModel.getPhotoListLive().getValue() == null) {
-            mViewModel.fetchData();
+        if (galleryViewModel.getPhotoListLive().getValue() == null) {
+            galleryViewModel.fetchData();
         }
 
-        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+        swipeLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                mViewModel.fetchData();
+                galleryViewModel.fetchData();
             }
         });
     }

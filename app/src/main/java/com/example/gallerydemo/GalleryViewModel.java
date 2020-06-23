@@ -22,6 +22,7 @@ import java.util.Random;
 public class GalleryViewModel extends AndroidViewModel {
     private MutableLiveData<List<PhotoItem>> _photoListLive = new MutableLiveData<List<PhotoItem>>();
     LiveData<List<PhotoItem>> photoListLive;
+    private static final String TAG = "galleryDemo";
 
     public LiveData<List<PhotoItem>> getPhotoListLive() {
         return _photoListLive;
@@ -45,16 +46,18 @@ public class GalleryViewModel extends AndroidViewModel {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        Log.d("VolleyError", error.toString());
+                        Log.d(TAG, error.toString());
                     }
                 }
         );
         VolleySingleton.getInstance(getApplication()).getRequestQueue().add(stringRequest);
     }
 
-    private final List<String> keywords = new ArrayList<String>(Arrays.asList("Bayern Munich", "Inter Milan", "Borussia Dortmund", "FC Barcelona", ""));
+    private final List<String> keywords = new ArrayList<String>(
+            Arrays.asList("Bayern Munich", "Inter Milan", "Borussia Dortmund", "FC Barcelona", "Germany", "China", "Japan"));
     private  String getUrl() {
-        int randomIdx = new Random().nextInt(3);
+        int randomIdx = new Random().nextInt(7);
+        Log.d(TAG, "key: " + keywords.get(randomIdx));
         return "https://pixabay.com/api/?key=17115680-36b85063fdf3b37b583e2dd11&q=" + keywords.get(randomIdx).replaceAll(" ", "+") + "&per_page=100";
     }
 
