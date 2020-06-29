@@ -1,21 +1,19 @@
 package com.example.gallerydemo;
 
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProvider;
-
 import android.app.Activity;
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 
 import java.util.List;
 
@@ -42,12 +40,13 @@ public class GalleryFragment extends Fragment {
         swipeLayout = activity.findViewById(R.id.swiperLayout);
         final GalleryAdapter galleryAdapter = new GalleryAdapter();
         recyclerView.setAdapter(galleryAdapter);
-        recyclerView.setLayoutManager(new GridLayoutManager(requireContext(), 2));
+        recyclerView.setLayoutManager(new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL));
         galleryViewModel = new ViewModelProvider(this, new ViewModelProvider.AndroidViewModelFactory(activity.getApplication())).get(GalleryViewModel.class);
         galleryViewModel.getPhotoListLive().observe(getViewLifecycleOwner() , new Observer<List<PhotoItem>>() {
             @Override
             public void onChanged(List<PhotoItem> photoItems) {
                 galleryAdapter.submitList(photoItems);
+                getActivity().setTitle(galleryViewModel.curKey);
                 if (swipeLayout.isRefreshing()) {
                     swipeLayout.setRefreshing(false);
                 }

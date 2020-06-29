@@ -1,5 +1,8 @@
 package com.example.gallerydemo;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.util.List;
 
 public class Pixabay {
@@ -32,10 +35,40 @@ public class Pixabay {
     }
 }
 
-class PhotoItem {
+class PhotoItem implements Parcelable {
     String webformatURL;
     int id;
     String largeImageURL;
+
+    protected PhotoItem(Parcel in) {
+        webformatURL = in.readString();
+        id = in.readInt();
+        largeImageURL = in.readString();
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(webformatURL);
+        dest.writeInt(id);
+        dest.writeString(largeImageURL);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    public static final Creator<PhotoItem> CREATOR = new Creator<PhotoItem>() {
+        @Override
+        public PhotoItem createFromParcel(Parcel in) {
+            return new PhotoItem(in);
+        }
+
+        @Override
+        public PhotoItem[] newArray(int size) {
+            return new PhotoItem[size];
+        }
+    };
 
     public String getWebformatURL() {
         return webformatURL;

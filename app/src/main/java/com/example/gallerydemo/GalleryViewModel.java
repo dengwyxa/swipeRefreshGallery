@@ -23,6 +23,7 @@ public class GalleryViewModel extends AndroidViewModel {
     private MutableLiveData<List<PhotoItem>> _photoListLive = new MutableLiveData<List<PhotoItem>>();
     LiveData<List<PhotoItem>> photoListLive;
     private static final String TAG = "galleryDemo";
+    String curKey;
 
     public LiveData<List<PhotoItem>> getPhotoListLive() {
         return _photoListLive;
@@ -54,11 +55,12 @@ public class GalleryViewModel extends AndroidViewModel {
     }
 
     private final List<String> keywords = new ArrayList<String>(
-            Arrays.asList("Bayern Munich", "Inter Milan", "Borussia Dortmund", "FC Barcelona", "Germany", "China", "Japan"));
+            Arrays.asList("拜仁慕尼黑", "西安", "北京", "天津", "东京", "京都", "北海道", "冲绳", "琦玉"));
     private  String getUrl() {
         int randomIdx = new Random().nextInt(7);
-        Log.d(TAG, "key: " + keywords.get(randomIdx));
-        return "https://pixabay.com/api/?key=17115680-36b85063fdf3b37b583e2dd11&q=" + keywords.get(randomIdx).replaceAll(" ", "+") + "&per_page=100";
+        curKey = keywords.get(randomIdx);
+        Log.d(TAG, "key: " + curKey);
+        return "https://pixabay.com/api/?key=17115680-36b85063fdf3b37b583e2dd11&lang=zh&q=" + curKey.replaceAll(" ", "+") + "&per_page=100";
     }
 
 

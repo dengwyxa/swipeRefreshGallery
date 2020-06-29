@@ -1,16 +1,12 @@
 package com.example.gallerydemo;
 
 import android.graphics.drawable.Drawable;
-import android.os.Bundle;
-import android.os.Parcelable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
@@ -21,13 +17,11 @@ import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 
-import java.util.ArrayList;
-
 import io.supercharge.shimmerlayout.ShimmerLayout;
+import uk.co.senab.photoview.PhotoView;
 
-public class GalleryAdapter extends ListAdapter<PhotoItem, MyViewHolder>{
-
-    protected GalleryAdapter() {
+public class PagerPhotoListAdapter extends ListAdapter<PhotoItem, PagerPhotoViewHolder> {
+    public PagerPhotoListAdapter() {
         super(new DiffUtil.ItemCallback<PhotoItem>() {
             @Override
             public boolean areItemsTheSame(@NonNull PhotoItem oldItem, @NonNull PhotoItem newItem) {
@@ -43,30 +37,20 @@ public class GalleryAdapter extends ListAdapter<PhotoItem, MyViewHolder>{
 
     @NonNull
     @Override
-    public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        final MyViewHolder holder = new MyViewHolder(
-                LayoutInflater.from(parent.getContext()).inflate(R.layout.gallery_cell, parent, false));
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Bundle bundle = new Bundle();
-                bundle.putParcelableArrayList("PHOTO_LIST", new ArrayList<Parcelable>(getCurrentList()));
-                bundle.putInt("PHOTO_POS", holder.getBindingAdapterPosition());
-                Navigation.findNavController(holder.itemView).navigate(R.id.action_galleryFragment_to_pagerPhotoFragment, bundle);
-            }
-        });
-        return holder;
+    public PagerPhotoViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.pager_photo_view, parent, false);
+        return new PagerPhotoViewHolder(v);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull final MyViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull PagerPhotoViewHolder holder, int position) {
+        PhotoView imageView = (PhotoView) holder.itemView.findViewById(R.id.pagerPhoto);
         final ShimmerLayout shimmerLayout = holder.itemView.findViewById(R.id.pagerPhotoShimmerLayout);
         shimmerLayout.setShimmerColor(0x55FFFFFF);
         shimmerLayout.setShimmerAngle(0);
         shimmerLayout.startShimmerAnimation();
-        ImageView imageView = holder.itemView.findViewById(R.id.imageView);
         Glide.with(holder.itemView)
-                .load(getItem(position).webformatURL)
+                .load(getItem(position).largeImageURL)
                 .placeholder(R.drawable.photo_placeholder)
                 .listener(new RequestListener<Drawable>() {
                     @Override
@@ -76,7 +60,7 @@ public class GalleryAdapter extends ListAdapter<PhotoItem, MyViewHolder>{
 
                     @Override
                     public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
-                        if (shimmerLayout != null ) {
+                        if (shimmerLayout != null) {
                             shimmerLayout.stopShimmerAnimation();
                         }
                         return false;
@@ -86,8 +70,9 @@ public class GalleryAdapter extends ListAdapter<PhotoItem, MyViewHolder>{
     }
 }
 
-class MyViewHolder extends RecyclerView.ViewHolder {
-    public MyViewHolder(@NonNull View itemView) {
+class PagerPhotoViewHolder extends RecyclerView.ViewHolder {
+
+    public PagerPhotoViewHolder(@NonNull View itemView) {
         super(itemView);
     }
 }
